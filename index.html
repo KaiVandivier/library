@@ -15,14 +15,30 @@
         <th>Title</th>
         <th>Author</th>
         <th>Pages</th>
-        <th>Read?</th>
+        <th>Read? (click cell to toggle)</th>
       </tr>
     </thead>
     <tbody>
 
     </tbody>
-
   </table>
+  
+  <br>
+  <button id="new-book">New Book</button>
+  <form id="new-book-form" class="hidden">
+    <p>Book Title: <input type="text" id="newTitle"></p>
+    <p>Author: <input type="text" id="newAuthor"></p>
+    <p>Number of pages: <input type="number" id="newPages"></p>
+    <p>Read yet? 
+      <input id="newRead" type="radio" name="answer" value="yes" required>
+      <label for="yes">Yes</label>
+      <input id="no" type="radio" name="answer" value="no" required>
+      <label for="no">No</label>
+    </p>
+  </form>
+  <button id="add-book" class="hidden">Add Book</button>
+
+
 </body>
 
 <script src="script.js"></script>

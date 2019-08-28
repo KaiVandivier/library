@@ -1,5 +1,9 @@
 
 let library = []
+const newBookBtn = document.querySelector('#new-book')
+newBookBtn.addEventListener('click', displayNewBookForm)
+const addBookBtn = document.querySelector('#add-book')
+addBookBtn.addEventListener('click', addBookToLibrary)
 
 // "Constructor"
 function Book(title, author, pages, read) {
@@ -13,21 +17,48 @@ Book.prototype.info = function () {
   return `${this.title} by ${this.author}, ${this.pages} pages, ${this.read}` 
 }
 
-function addBookToLibray() {
+function displayNewBookForm() {
+  const form = document.querySelector('#new-book-form')
+  const btn = document.querySelector('#add-book')
+  form.classList.toggle('hidden')
+  btn.classList.toggle('hidden')
+}
+
+function addBookToLibrary() {
   // TODO: Get user input
-  let newBook = new Book("a","b","c",false)
+  let newInfo = document.getElementById('new-book-form')
+
+  console.log(newInfo.elements)
+  console.log(newInfo.elements.newPages.valueAsNumber)
+
+  let newTitle = newInfo.elements.newTitle.value
+  let newAuthor = newInfo.elements.newAuthor.value 
+  let newPages = newInfo.elements.newPages.valueAsNumber 
+  let newRead = newInfo.elements.newRead.checked
+  let newBook = new Book(newTitle,newAuthor,newPages,newRead)
   library.push(newBook)
+  renderBook(newBook)
+  clearForm()
+}
+
+function clearForm() {
+  let formInfo = document.getElementById('new-book-form')
+
+  formInfo.elements.newTitle.value = ""
+  formInfo.elements.newAuthor.value = ""
+  formInfo.elements.newPages.value = ""
+  formInfo.elements.newRead.checked = false
+  formInfo.elements.no.checked = false
 }
 
 function renderTable(library) {
   const table = document.querySelector('tbody');
-  for (let book of library) {
-    renderBook(book, table)
-  }
+  for (let book of library) renderBook(book)
 }
 
-function renderBook(book, table) {
+function renderBook(book) {
   // make new table row, add to table
+  const table = document.querySelector('tbody');
   const newRow = document.createElement('tr')
   table.appendChild(newRow)
 
