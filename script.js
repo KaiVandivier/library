@@ -1,5 +1,5 @@
 // TODO: Make it look pretty
-// TODO: Make "read" toggles
+// TODO: Store library values offline
 
 let library = []
 
@@ -13,7 +13,7 @@ function Book(title, author, pages, read) {
   this.title = title
   this.author = author
   this.pages = pages
-  this.read = (read) ? 'has been read' : 'not read yet'
+  this.read = read
 }
 
 Book.prototype.info = function () {
@@ -23,7 +23,14 @@ Book.prototype.info = function () {
 function displayNewBookForm() {
   const form = document.querySelector('#new-book-form')
   const btn = document.querySelector('#add-book')
-  form.classList.toggle('hidden')
+  form.classList.toggle(  // make new table row, add to table
+    // make new table row, add to table
+    // make new table row, add to table
+    // make new table row, add to table
+    // make new table row, add to table
+    // make new table row, add to table
+    // make new table row, add to table
+    'hidden')
   btn.classList.toggle('hidden')
 }
 
@@ -60,35 +67,57 @@ function renderTable(library) {
 }
 
 function renderBook(book) {
-  // make new table row, add to table
   const table = document.querySelector('tbody');
   const newRow = document.createElement('tr')
   table.appendChild(newRow)
+  addTitleCell(book, newRow)
+  addAuthorCell(book, newRow)
+  addPagesCell(book, newRow)
+  addReadCell(book, newRow)
+  addDeleteCell(book, newRow)
+}
 
-  // make new table cells, add to row
+function addTitleCell(book, newRow) {
   const newTitle = document.createElement('td')
-  const newAuthor = document.createElement('td')
-  const newPages = document.createElement('td')
-  const newRead = document.createElement('td')
-  const del = document.createElement('td')
-
   newTitle.textContent = book.title
-  newAuthor.textContent = book.author
-  newPages.textContent = book.pages
-  newRead.textContent = book.read
-
   newRow.appendChild(newTitle)
-  newRow.appendChild(newAuthor)
-  newRow.appendChild(newPages)
-  newRow.appendChild(newRead)
-  newRow.appendChild(del)
+}
 
+function addAuthorCell(book, newRow) {
+  const newAuthor = document.createElement('td')
+  newAuthor.textContent = book.author
+  newRow.appendChild(newAuthor)
+}
+
+function addPagesCell(book, newRow) {
+  const newPages = document.createElement('td')
+  newPages.textContent = book.pages
+  newRow.appendChild(newPages)
+}
+
+function addReadCell(book, newRow) {
+  const newRead = document.createElement('td')
+  newRead.textContent = (book.read) ? 'has been read' : 'not read yet'
+  newRow.appendChild(newRead)
+  newRead.setAttribute('data-index', (library.indexOf(book)).toString())
+  newRead.addEventListener('click', (e) => toggleRead(parseInt(e.target.getAttribute('data-index'))))
+}
+
+function addDeleteCell(book, newRow) {
+  const del = document.createElement('td')
+  newRow.appendChild(del)
   const delBtn = document.createElement('button')
   delBtn.textContent = "Delete"
   delBtn.classList.add('delete')
   delBtn.setAttribute('data-index', (library.indexOf(book)).toString())
   del.appendChild(delBtn)
   delBtn.addEventListener('click', (e) => deleteBook(parseInt(e.target.getAttribute('data-index'))))
+}
+
+function toggleRead(index) {
+  let book = library[index]
+  book.read = !book.read
+  renderTable(library)
 }
 
 function deleteBook(index) {
