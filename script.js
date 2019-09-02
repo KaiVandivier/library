@@ -1,13 +1,6 @@
-// TODO: Make it look pretty
+// TODO: Make the table look pretty
 // TODO: Store library values offline
 
-let library = []
-
-const newBookBtn = document.querySelector('#new-book')
-newBookBtn.addEventListener('click', displayNewBookForm)
-
-const addBookBtn = document.querySelector('#add-book')
-addBookBtn.addEventListener('click', addBookToLibrary)
 
 function Book(title, author, pages, read) {
   this.title = title
@@ -23,29 +16,22 @@ Book.prototype.info = function () {
 function displayNewBookForm() {
   const form = document.querySelector('#new-book-form')
   const btn = document.querySelector('#add-book')
-  form.classList.toggle(  // make new table row, add to table
-    // make new table row, add to table
-    // make new table row, add to table
-    // make new table row, add to table
-    // make new table row, add to table
-    // make new table row, add to table
-    // make new table row, add to table
-    'hidden')
+  form.classList.toggle('hidden')
   btn.classList.toggle('hidden')
 }
 
-function addBookToLibrary(newBook = null) {
+function addBookToLibrary() {
   // TODO: Validate form input
-  if (!newBook) {
-    let newInfo = document.getElementById('new-book-form')
-    let newTitle = newInfo.elements.newTitle.value
-    let newAuthor = newInfo.elements.newAuthor.value 
-    let newPages = newInfo.elements.newPages.valueAsNumber 
-    let newRead = newInfo.elements.newRead.checked
-    newBook = new Book(newTitle, newAuthor, newPages, newRead)
-  }
+  let newInfo = document.getElementById('new-book-form')
+  let newTitle = newInfo.elements.newTitle.value
+  let newAuthor = newInfo.elements.newAuthor.value 
+  let newPages = newInfo.elements.newPages.valueAsNumber 
+  let newRead = newInfo.elements.newRead.checked
+  let newBook = new Book(newTitle, newAuthor, newPages, newRead)
+  // an alternative approach:
+  // let someValue = document.getElementById('bgcolor').value
   library.push(newBook)
-  renderBook(newBook)
+  updateStorage()
   clearForm()
 }
 
@@ -117,25 +103,45 @@ function addDeleteCell(book, newRow) {
 function toggleRead(index) {
   let book = library[index]
   book.read = !book.read
-  renderTable(library)
+  updateStorage()
 }
 
 function deleteBook(index) {
   library.splice(index, 1)
+  updateStorage()
+}
+
+function updateStorage() {
+  localStorage.setItem('library', JSON.stringify(library))
   renderTable(library)
 }
 
+// Execution
+
+let library = []
+
+const newBookBtn = document.querySelector('#new-book')
+newBookBtn.addEventListener('click', displayNewBookForm)
+
+const addBookBtn = document.querySelector('#add-book')
+addBookBtn.addEventListener('click', addBookToLibrary)
+
+if (!localStorage.getItem('library')) {
+  let loadSampleLibrary = confirm("No library was found in local storage. Load sample library?")
+  if (loadSampleLibrary) {
+    let hobbit = new Book("The Hobbit", "J. R. R. Tolkein", 295, false)
+    let eden = new Book("East of Eden", "John Steinbeck", 512, true)
+    let steppenwolf = new Book("Steppenwolf", "Herman Hesse", 254, true)
+    let issueAtHand = new Book("The Issue at Hand", "Gil Fronsdal", 154, true)
+    library.push(hobbit, eden, steppenwolf, issueAtHand)
+  }
+  updateStorage()
+} else {
+  library = JSON.parse(localStorage.getItem('library'))
+  renderTable(library)
+}
+
+
 /***  Testing   ****/
 
-// set up some books manually *****
-let hobbit = new Book("The Hobbit", "J. R. R. Tolkein", 295, false)
-let eden = new Book("East of Eden", "John Steinbeck", 512, true)
-let steppenwolf = new Book("Steppenwolf", "Herman Hesse", 254, true)
-let issueAtHand = new Book("The Issue at Hand", "Gil Fronsdal", 154, true)
-addBookToLibrary(hobbit)
-addBookToLibrary(eden)
-addBookToLibrary(steppenwolf)
-addBookToLibrary(issueAtHand)
-
-// test functions *****
-// renderTable(library)
+/* ********************************************************* */
