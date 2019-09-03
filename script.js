@@ -1,6 +1,3 @@
-// TODO: Make the table look pretty
-// TODO: Store library values offline
-
 
 function Book(title, author, pages, read) {
   this.title = title
@@ -13,7 +10,7 @@ Book.prototype.info = function () {
   return `${this.title} by ${this.author}, ${this.pages} pages, ${this.read}` 
 }
 
-function displayNewBookForm() {
+function toggleNewBookForm() {
   const form = document.querySelector('#new-book-form')
   const btn = document.querySelector('#add-book')
   form.classList.toggle('hidden')
@@ -21,28 +18,32 @@ function displayNewBookForm() {
 }
 
 function addBookToLibrary() {
-  // TODO: Validate form input
-  let newInfo = document.getElementById('new-book-form')
-  let newTitle = newInfo.elements.newTitle.value
-  let newAuthor = newInfo.elements.newAuthor.value 
-  let newPages = newInfo.elements.newPages.valueAsNumber 
-  let newRead = newInfo.elements.newRead.checked
-  let newBook = new Book(newTitle, newAuthor, newPages, newRead)
-  // an alternative approach:
-  // let someValue = document.getElementById('bgcolor').value
+  const formContents = document.getElementById('new-book-form').elements
+  const newTitle = formContents.title.value
+  const newAuthor = formContents.author.value 
+  const newPages = formContents.pages.valueAsNumber 
+  let newRead = formContents.read.value
+  // Validating input
+  let bookInfo = [newTitle, newAuthor, newPages, newRead]
+  let validBook = bookInfo.every((item) => item)
+  if (!validBook) {
+    alert('Please fill in all the fields to submit a new book.')
+    return
+  }
+  let newBook = new Book(...bookInfo)
   library.push(newBook)
   updateStorage()
   clearForm()
+  toggleNewBookForm()
 }
 
 function clearForm() {
-  let formInfo = document.getElementById('new-book-form')
-
-  formInfo.elements.newTitle.value = ""
-  formInfo.elements.newAuthor.value = ""
-  formInfo.elements.newPages.value = ""
-  formInfo.elements.newRead.checked = false
-  formInfo.elements.no.checked = false
+  const formContents = document.getElementById('new-book-form').elements
+  formContents.title.value = ""
+  formContents.author.value = ""
+  formContents.pages.valueAsNumber = ""
+  formContents.read[0].checked = false
+  formContents.read[1].checked = false
 }
 
 function renderTable(library) {
@@ -65,6 +66,7 @@ function renderBook(book) {
 
 function addTitleCell(book, newRow) {
   const newTitle = document.createElement('td')
+  newTitle.classList.add('title')
   newTitle.textContent = book.title
   newRow.appendChild(newTitle)
 }
@@ -83,7 +85,8 @@ function addPagesCell(book, newRow) {
 
 function addReadCell(book, newRow) {
   const newRead = document.createElement('td')
-  newRead.textContent = (book.read) ? 'has been read' : 'not read yet'
+  newRead.textContent = book.read
+  newRead.classList.add('read')
   newRow.appendChild(newRead)
   newRead.setAttribute('data-index', (library.indexOf(book)).toString())
   newRead.addEventListener('click', (e) => toggleRead(parseInt(e.target.getAttribute('data-index'))))
@@ -102,12 +105,21 @@ function addDeleteCell(book, newRow) {
 
 function toggleRead(index) {
   let book = library[index]
-  book.read = !book.read
+  book.read = (book.read == 'Yes') ? 'No' : 'Yes'
   updateStorage()
 }
 
 function deleteBook(index) {
   library.splice(index, 1)
+  updateStorage()
+}
+
+function loadSampleLibrary() {
+  let hobbit = new Book("The Hobbit", "J. R. R. Tolkein", 295, "No")
+  let eden = new Book("East of Eden", "John Steinbeck", 601, 'Yes')
+  let steppenwolf = new Book("Steppenwolf", "Herman Hesse", 237, 'Yes')
+  let issueAtHand = new Book("The Issue at Hand", "Gil Fronsdal", 161, 'Yes')
+  library.push(hobbit, eden, steppenwolf, issueAtHand)
   updateStorage()
 }
 
@@ -121,21 +133,14 @@ function updateStorage() {
 let library = []
 
 const newBookBtn = document.querySelector('#new-book')
-newBookBtn.addEventListener('click', displayNewBookForm)
+newBookBtn.addEventListener('click', toggleNewBookForm)
 
 const addBookBtn = document.querySelector('#add-book')
 addBookBtn.addEventListener('click', addBookToLibrary)
 
 if (!localStorage.getItem('library')) {
-  let loadSampleLibrary = confirm("No library was found in local storage. Load sample library?")
-  if (loadSampleLibrary) {
-    let hobbit = new Book("The Hobbit", "J. R. R. Tolkein", 295, false)
-    let eden = new Book("East of Eden", "John Steinbeck", 512, true)
-    let steppenwolf = new Book("Steppenwolf", "Herman Hesse", 254, true)
-    let issueAtHand = new Book("The Issue at Hand", "Gil Fronsdal", 154, true)
-    library.push(hobbit, eden, steppenwolf, issueAtHand)
-  }
-  updateStorage()
+  const message = "No library was found in local storage. Load sample library?"
+  if (confirm(message)) loadSampleLibrary()
 } else {
   library = JSON.parse(localStorage.getItem('library'))
   renderTable(library)
