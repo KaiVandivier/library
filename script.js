@@ -19,24 +19,17 @@ function toggleNewBookForm() {
   btn.classList.toggle('hidden')
 }
 
-function addBookToLibrary() {
-  const formContents = document.getElementById('new-book-form').elements
-  const newTitle = formContents.title.value
-  const newAuthor = formContents.author.value 
-  const newPages = formContents.pages.valueAsNumber 
-  let newRead = formContents.read.value
-  // Validating input
-  let bookInfo = [newTitle, newAuthor, newPages, newRead]
-  let validBook = bookInfo.every((item) => item)
-  if (!validBook) {
-    alert('Please fill in all the fields to submit a new book.')
-    return
-  }
+function addBookToLibrary(e) {
+  const { elements } = e.target;
+  const properties = ["title", "author", "pages", "read"];
+  const bookInfo = properties.map((p) => elements[p].value);
+  // validate book here?
   let newBook = new Book(...bookInfo)
   library.push(newBook)
   updateStorage()
   clearForm()
   toggleNewBookForm()
+  e.preventDefault();
 }
 
 function clearForm() {
@@ -137,8 +130,8 @@ let library = []
 const newBookBtn = document.querySelector('#new-book')
 newBookBtn.addEventListener('click', toggleNewBookForm)
 
-const addBookBtn = document.querySelector('#add-book')
-addBookBtn.addEventListener('click', addBookToLibrary)
+const bookForm = document.getElementById("new-book-form");
+bookForm.addEventListener("submit", addBookToLibrary);
 
 if (!localStorage.getItem('library')) {
   const message = "No library was found in local storage. Load sample library?"
@@ -147,8 +140,3 @@ if (!localStorage.getItem('library')) {
   library = JSON.parse(localStorage.getItem('library'))
   renderTable(library)
 }
-
-
-/***  Testing   ****/
-
-/* ********************************************************* */
